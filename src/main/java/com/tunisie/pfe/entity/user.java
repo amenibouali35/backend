@@ -3,82 +3,84 @@ package com.tunisie.pfe.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
 public class user {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @NotBlank(message = "Le nom est obligatoire")
-    @Column(name = "name")
-    private String name;
-    
-    @Email(message = "Email invalide")
-    @NotBlank(message = "L'email est obligatoire")
-    @Column(name = "email", unique = true)
-    private String email;
-    
-    @NotBlank(message = "Le rôle est obligatoire")
+
+    @NotBlank
+    @Column(name = "nom")
+    private String nom;
+
+    @NotBlank
+    @Column(name = "prenom")
+    private String prenom;
+
+    @Email
+    @NotBlank
+    @Column(name = "email", unique = true, updatable = false)
+    private String email;   // NE CHANGE JAMAIS
+
+    @NotBlank
+    @Column(name = "mot_de_passe")
+    private String motDePasse;
+
+    @Column(name = "photo_profil")
+    private String photoProfil;
+
+    @NotBlank
     @Column(name = "role")
     private String role;
-    
-    @NotBlank(message = "Le CIN est obligatoire")
-    @Column(name = "cin", unique = true)
-    private String cin;
-    
-    // Constructeur vide (obligatoire pour JPA)
-    public user() {
+
+    @Column(name = "date_creation", updatable = false)
+    private LocalDateTime dateCreation;
+
+    @Column(name = "date_modification")
+    private LocalDateTime dateModification;
+
+    // 👉 Pour gérer les dates automatiquement
+    @PrePersist
+    protected void onCreate() {
+        dateCreation = LocalDateTime.now();
+        dateModification = LocalDateTime.now();
     }
-    
-    // Constructeur avec paramètres
-    public user(String name, String email, String role, String cin) {
-        this.name = name;
-        this.email = email;
-        this.role = role;
-        this.cin = cin;
+
+    @PreUpdate
+    protected void onUpdate() {
+        dateModification = LocalDateTime.now();
     }
-    
-    // Getters et Setters
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
-    public String getRole() {
-        return role;
-    }
-    
-    public void setRole(String role) {
-        this.role = role;
-    }
-    
-    public String getCin() {
-        return cin;
-    }
-    
-    public void setCin(String cin) {
-        this.cin = cin;
-    }
+
+    // ===== Constructeur vide =====
+    public user() {}
+
+    // ===== Getters & Setters =====
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
+
+    public String getPrenom() { return prenom; }
+    public void setPrenom(String prenom) { this.prenom = prenom; }
+
+    public String getEmail() { return email; }
+    // ❌ PAS DE setEmail (email ne change jamais)
+
+    public String getMotDePasse() { return motDePasse; }
+    public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
+
+    public String getPhotoProfil() { return photoProfil; }
+    public void setPhotoProfil(String photoProfil) { this.photoProfil = photoProfil; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+
+    public LocalDateTime getDateCreation() { return dateCreation; }
+    public LocalDateTime getDateModification() { return dateModification; }
 }
