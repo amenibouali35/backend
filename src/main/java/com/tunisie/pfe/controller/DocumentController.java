@@ -1,4 +1,4 @@
-package com.tunisie.pfe.controller;
+/*package com.tunisie.pfe.controller;
 
 import com.tunisie.pfe.entity.Document;
 import com.tunisie.pfe.repository.DocumentRepository;
@@ -27,15 +27,15 @@ import java.util.List;
 public class DocumentController {
 
     // ✅ Chemin unifié pour tous les fichiers
-    private final String uploadDir = "C:/spring_uploads/documents/";
+    //private final String uploadDir = "C:/spring_uploads/documents/";
     
     // ✅ Extensions autorisées
-    private final List<String> ALLOWED_EXTENSIONS = Arrays.asList(
-        "pdf", "doc", "docx", "xls", "xlsx", "txt"
-    );
+   // private final List<String> ALLOWED_EXTENSIONS = Arrays.asList(
+      //  "pdf", "doc", "docx", "xls", "xlsx", "txt"
+    //);
 
-    @Autowired
-    private DocumentRepository documentRepository;
+    //@Autowired
+  //  private DocumentRepository documentRepository;
 
     // 🔹 GET : liste des documents
 //    @GetMapping
@@ -213,4 +213,4 @@ public class DocumentController {
                 return "file";
         }
     }
-}
+}*/
