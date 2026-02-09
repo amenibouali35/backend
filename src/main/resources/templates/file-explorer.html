@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Explorateur de fichiers</title>
+</head>
+<body>
+
+<h2>Explorateur de fichiers</h2>
+
+<p th:if="${error}" th:text="${error}" style="color:red"></p>
+
+<ul>
+    <li th:if="${currentPath}">
+        <a th:href="@{/files}">⬅ Retour racine</a>
+    </li>
+
+    <li th:each="item : ${files}">
+        <span th:if="${item.directory}">
+            📁 <a th:href="@{/files(path=${item.path})}"
+                  th:text="${item.name}"></a>
+        </span>
+
+        <span th:if="${!item.directory}">
+            📄 <a th:href="@{/files/download(path=${item.path})}"
+                  th:text="${item.name}"></a>
+        </span>
+    </li>
+</ul>
+
+</body>
+</html>

@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/documents")
+@RequestMapping("/api/document")
 @CrossOrigin("*")
 public class DocumentController {
 
@@ -38,69 +38,69 @@ public class DocumentController {
     private DocumentRepository documentRepository;
 
     // 🔹 GET : liste des documents
-    @GetMapping
-    public ResponseEntity<List<Document>> getAllDocuments() {
-        try {
-            List<Document> documents = documentRepository.findAll();
-            return ResponseEntity.ok(documents);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+//    @GetMapping
+//    public ResponseEntity<List<Document>> getAllDocuments() {
+//        try {
+//            List<Document> documents = documentRepository.findAll();
+//            return ResponseEntity.ok(documents);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
 
     // 🔹 POST : upload fichier avec validation
-    @PostMapping("/upload")
-    public ResponseEntity<?> uploadDocument(
-            @RequestParam("titre") String titre,
-            @RequestParam("file") MultipartFile file
-    ) {
-        try {
-            // ✅ Vérification fichier vide
-            if (file.isEmpty()) {
-                return ResponseEntity.badRequest()
-                    .body("Le fichier est vide");
-            }
-
-            // ✅ Vérification extension
-            String originalFilename = file.getOriginalFilename();
-            String extension = getFileExtension(originalFilename);
-            
-            if (!ALLOWED_EXTENSIONS.contains(extension.toLowerCase())) {
-                return ResponseEntity.badRequest()
-                    .body("Type de fichier non autorisé. Extensions autorisées : " + ALLOWED_EXTENSIONS);
-            }
-
-            // ✅ Créer dossier s'il n'existe pas
-            File folder = new File(uploadDir);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-
-            // ✅ Nom unique avec timestamp
-            String filename = System.currentTimeMillis() + "_" + originalFilename;
-            Path filePath = Paths.get(uploadDir + filename);
-            
-            // ✅ Sauvegarder le fichier
-            Files.copy(file.getInputStream(), filePath);
-
-            // ✅ Déterminer l'icône selon l'extension
-            String icone = determineIcone(extension);
-
-            // ✅ Sauvegarder en DB
-            Document doc = new Document();
-            doc.setTitre(titre);
-            doc.setFichier(filename);
-            doc.setIcone(icone);
-            
-            Document savedDoc = documentRepository.save(doc);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedDoc);
-
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Erreur lors de l'upload : " + e.getMessage());
-        }
-    }
+//    @PostMapping("/upload")
+//    public ResponseEntity<?> uploadDocument(
+//            @RequestParam("titre") String titre,
+//            @RequestParam("file") MultipartFile file
+//    ) {
+//        try {
+//            // ✅ Vérification fichier vide
+//            if (file.isEmpty()) {
+//                return ResponseEntity.badRequest()
+//                    .body("Le fichier est vide");
+//            }
+//
+//            // ✅ Vérification extension
+//            String originalFilename = file.getOriginalFilename();
+//            String extension = getFileExtension(originalFilename);
+//            
+//            if (!ALLOWED_EXTENSIONS.contains(extension.toLowerCase())) {
+//                return ResponseEntity.badRequest()
+//                    .body("Type de fichier non autorisé. Extensions autorisées : " + ALLOWED_EXTENSIONS);
+//            }
+//
+//            // ✅ Créer dossier s'il n'existe pas
+//            File folder = new File(uploadDir);
+//            if (!folder.exists()) {
+//                folder.mkdirs();
+//            }
+//
+//            // ✅ Nom unique avec timestamp
+//            String filename = System.currentTimeMillis() + "_" + originalFilename;
+//            Path filePath = Paths.get(uploadDir + filename);
+//            
+//            // ✅ Sauvegarder le fichier
+//            Files.copy(file.getInputStream(), filePath);
+//
+//            // ✅ Déterminer l'icône selon l'extension
+//            String icone = determineIcone(extension);
+//
+//            // ✅ Sauvegarder en DB
+//            Document doc = new Document();
+//            doc.setTitre(titre);
+//            doc.setFichier(filename);
+//            doc.setIcone(icone);
+//            
+//            Document savedDoc = documentRepository.save(doc);
+//
+//            return ResponseEntity.status(HttpStatus.CREATED).body(savedDoc);
+//
+//        } catch (IOException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body("Erreur lors de l'upload : " + e.getMessage());
+//        }
+//    }
 
     // 🔹 GET : téléchargement sécurisé
     @GetMapping("/download/{id}")
