@@ -1,90 +1,80 @@
 package com.tunisie.pfe.controller;
 
-import com.tunisie.pfe.dto.DocumentDto;
-import org.springframework.http.HttpStatus;
+import com.tunisie.pfe.entity.Document;
+import com.tunisie.pfe.repository.DocumentRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
+
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 
 @RestController
 @RequestMapping("/api/documents")
 public class DocumentRestController {
 
-    private final Path baseDir = Paths.get("documents");
+    @Autowired
+    private DocumentRepository documentRepository;
 
-    // 1️⃣ Lister les documents
-    @GetMapping
-    public ResponseEntity<List<DocumentDto>> listDocuments(
-            @RequestParam(value = "path", required = false) String path) {
+    private final Path uploadDir = Paths.get("documents");
 
-        Path currentPath = baseDir;
-        if (path != null && !path.isEmpty()) {
-            currentPath = baseDir.resolve(path);
-        }
-
-        if (!currentPath.normalize().startsWith(baseDir)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        File folder = currentPath.toFile();
-        if (!folder.exists() || !folder.isDirectory()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        List<DocumentDto> documents = new ArrayList<>();
-
-        for (File file : folder.listFiles()) {
-            String relativePath =
-                    (path == null || path.isEmpty())
-                            ? file.getName()
-                            : path + "/" + file.getName();
-
-            documents.add(new DocumentDto(
-                    file.getName(),
-                    relativePath,
-                    file.isDirectory()
-            ));
-        }
-
-        return ResponseEntity.ok(documents);
-    }
-
-    // 2️⃣ Uploader un document
+    // ✅ 1️⃣ Upload avec type
     @PostMapping("/upload")
     public ResponseEntity<String> uploadDocument(
             @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "path", required = false) String path) {
+            @RequestParam("type") String type,
+            @RequestParam("titre") String titre) {
 
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("Fichier vide");
         }
 
         try {
-            Path targetDir = baseDir;
-            if (path != null && !path.isEmpty()) {
-                targetDir = baseDir.resolve(path);
-            }
+            // Crée le dossier "documents" si il n'existe pas
+            Files.createDirectories(uploadDir);
 
-            if (!targetDir.normalize().startsWith(baseDir)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
+            // Chemin complet du fichier à sauvegarder
+            Path targetFile = uploadDir.resolve(file.getOriginalFilename());
 
-            Files.createDirectories(targetDir);
-
-            Path targetFile = targetDir.resolve(file.getOriginalFilename());
+            // Copier le fichier uploadé dans le dossier "documents"
             Files.copy(file.getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
 
-            return ResponseEntity.ok("Fichier uploadé avec succès");
+            // Sauvegarder dans la base de données
+            Document doc = new Document();
+            doc.setTitre(titre);
+            doc.setFichier(file.getOriginalFilename()); // juste le nom du fichier
+            doc.setIcone("default.png");
+            doc.setType(type); // si tu veux garder le type
+            documentRepository.save(doc);
+
+            return ResponseEntity.ok("Fichier ajouté avec succès");
 
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de l'upload");
+                                 .body("Erreur serveur");
         }
+
+        }
+    
+
+
+    // ✅ 2️⃣ Lire tous les documents
+    @GetMapping
+    public List<Document> getAllDocuments() {
+        return documentRepository.findAll();
+    }
+
+    // ✅ 3️⃣ Lire par type
+    @GetMapping("/type/{type}")
+    public List<Document> getByType(@PathVariable String type) {
+        return documentRepository.findByType(type);
     }
 }

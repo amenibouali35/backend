@@ -16,6 +16,9 @@ public class Document {
 
     private String icone;
 
+    // 🔵 NOUVEAU CHAMP
+    private String type;
+
     // ===== Getters & Setters =====
 
     public Long getId() {
@@ -48,5 +51,14 @@ public class Document {
 
     public void setIcone(String icone) {
         this.icone = icone;
+    }
+
+    // 🔵 GETTER / SETTER TYPE
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

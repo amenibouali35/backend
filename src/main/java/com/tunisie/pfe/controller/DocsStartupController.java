@@ -13,22 +13,23 @@ import java.nio.file.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/docspp")
+@RequestMapping("/api/docsstartup")
 @CrossOrigin(origins = "*")
-public class DocsPPController {
+public class DocsStartupController {
 
     @Autowired
     private DocumentRepository documentRepository;
 
-    // 🔵 Dossier principal
-    private final Path baseDir = Paths.get("documents/personne_physique");
+    // 📁 Dossier Startup
+    private final Path baseDir = Paths.get("documents/startup");
 
     // ===========================
-    // ✅ 1️⃣ AJOUTER UN DOCUMENT
+    // ✅ 1️⃣ AJOUTER DOCUMENT STARTUP
     // ===========================
     @PostMapping("/upload")
-    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file,
-                                    @RequestParam("titre") String titre) {
+    public ResponseEntity<?> upload(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("titre") String titre) {
 
         try {
 
@@ -39,33 +40,33 @@ public class DocsPPController {
 
             Document document = new Document();
             document.setTitre(titre);
-            document.setFichier("personne_physique/" + file.getOriginalFilename());
+            document.setFichier("startup/" + file.getOriginalFilename());
             document.setIcone("default.png");
-            document.setType("personne_physique");
+            document.setType("startup");
 
             documentRepository.save(document);
 
-            return ResponseEntity.ok("Document Personne Physique ajouté avec succès");
+            return ResponseEntity.ok("Document STARTUP ajouté avec succès");
 
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Erreur lors de l'upload");
+            return ResponseEntity.status(500).body("Erreur upload STARTUP");
         }
     }
 
     // ===========================
-    // ✅ 2️⃣ VOIR TOUS LES DOCS PP
+    // ✅ 2️⃣ AFFICHER TOUS LES DOCS STARTUP
     // ===========================
     @GetMapping
-    public List<Document> getAllDocsPP() {
-        return documentRepository.findByType("personne_physique");
+    public List<Document> getAllStartup() {
+        return documentRepository.findByType("startup");
     }
 
     // ===========================
-    // ✅ 3️⃣ MODIFIER DOCUMENT
+    // ✅ 3️⃣ MODIFIER DOCUMENT STARTUP
     // ===========================
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateDocument(
+    public ResponseEntity<?> update(
             @PathVariable Long id,
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "titre", required = false) String titre) {
@@ -75,7 +76,7 @@ public class DocsPPController {
             Document document = documentRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Document non trouvé"));
 
-            if (!document.getType().equals("personne_physique")) {
+            if (!document.getType().equals("startup")) {
                 return ResponseEntity.badRequest().body("Type incorrect");
             }
 
@@ -90,35 +91,34 @@ public class DocsPPController {
                 Path filePath = baseDir.resolve(file.getOriginalFilename());
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                document.setFichier("personne_physique/" + file.getOriginalFilename());
+                document.setFichier("startup/" + file.getOriginalFilename());
             }
 
             documentRepository.save(document);
 
-            return ResponseEntity.ok("Document modifié avec succès");
+            return ResponseEntity.ok("Document STARTUP modifié avec succès");
 
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Erreur lors de la modification");
+            return ResponseEntity.status(500).body("Erreur modification STARTUP");
         }
     }
 
     // ===========================
-    // ✅ 4️⃣ SUPPRIMER DOCUMENT
+    // ✅ 4️⃣ SUPPRIMER DOCUMENT STARTUP
     // ===========================
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteDocument(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
 
         try {
 
             Document document = documentRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Document non trouvé"));
 
-            if (!document.getType().equals("personne_physique")) {
+            if (!document.getType().equals("startup")) {
                 return ResponseEntity.badRequest().body("Type incorrect");
             }
 
-            // Supprimer fichier physique
             Path filePath = Paths.get("documents").resolve(document.getFichier());
             if (Files.exists(filePath)) {
                 Files.delete(filePath);
@@ -126,11 +126,11 @@ public class DocsPPController {
 
             documentRepository.delete(document);
 
-            return ResponseEntity.ok("Document supprimé avec succès");
+            return ResponseEntity.ok("Document STARTUP supprimé avec succès");
 
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Erreur lors de la suppression");
+            return ResponseEntity.status(500).body("Erreur suppression STARTUP");
         }
     }
 }
