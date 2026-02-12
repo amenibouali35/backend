@@ -71,4 +71,11 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+    
+    @PutMapping("/restore/{id}")
+    public ResponseEntity<String> restoreUser(@PathVariable Long id) {
+        userService.restoreUser(id);
+        return ResponseEntity.ok("Utilisateur restauré avec succès");
+    }
+
 }

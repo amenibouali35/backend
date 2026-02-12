@@ -42,13 +42,19 @@ public class user {
 
     @Column(name = "date_modification")
     private LocalDateTime dateModification;
+    
+    @Column(name = "active")
+    private Integer active = 1; // 1 = actif par défaut
+
 
     // 👉 Pour gérer les dates automatiquement
     @PrePersist
     protected void onCreate() {
         dateCreation = LocalDateTime.now();
         dateModification = LocalDateTime.now();
+        active = 1; // utilisateur actif par défaut
     }
+
 
     @PreUpdate
     protected void onUpdate() {
@@ -83,4 +89,8 @@ public class user {
 
     public LocalDateTime getDateCreation() { return dateCreation; }
     public LocalDateTime getDateModification() { return dateModification; }
+    
+    public Integer getActive() { return active; }
+    public void setActive(Integer active) { this.active = active; }
+
 }

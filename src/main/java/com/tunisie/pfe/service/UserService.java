@@ -17,8 +17,9 @@ public class UserService {
 
     // ===== 1️⃣ Lire tous les utilisateurs =====
     public List<user> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findByActive(1);
     }
+
 
     // ===== 2️⃣ Lire un utilisateur par ID =====
     public Optional<user> getUserById(Long id) {
@@ -56,15 +57,25 @@ public class UserService {
 
     // ===== 5️⃣ Supprimer un utilisateur =====
     public void deleteUser(Long id) {
-
         user user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-        userRepository.delete(user);
+        user.setActive(0); // désactiver
+        userRepository.save(user);
     }
+
 
     // ===== 6️⃣ Chercher par email =====
     public Optional<user> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+    
+    public void restoreUser(Long id) {
+        user user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        user.setActive(1);
+        userRepository.save(user);
+    }
+
 }

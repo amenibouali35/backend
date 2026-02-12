@@ -1,4 +1,5 @@
 package com.tunisie.pfe.repository;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,4 +15,6 @@ public interface UserRepository extends JpaRepository<user, Long> {
 
     // Vérifier si un email existe déjà
     boolean existsByEmail(String email);
+    List<user> findByActive(Integer active);
+
 }
